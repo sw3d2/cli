@@ -1,0 +1,4 @@
+#!/bin/bash
+URL=https://github.com/facebook/react;
+DIR=/tmp/iswaac;
+/usr/bin/time -v sh/cli $URL $DIR;

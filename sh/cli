@@ -34,7 +34,7 @@ echo "Cloning sources into $REPO_DIR";
 PATH=node_modules/.bin:$PATH;
 
 echo "Parsing TS and generating AST in $VAST";
-ast-typescript $REPO_DIR/$REPO_PATH > $VAST || exit 1;
+ast-typescript -p $REPO_DIR/$REPO_PATH > $VAST || exit 1;
 
 echo "Converting AST into a treemap in $TMAP";
 treemap-ast $VAST > $TMAP || exit 1;

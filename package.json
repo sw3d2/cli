@@ -1,6 +1,6 @@
 {
   "name": "iswaac",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "bin": "sh/cli",
   "dependencies": {
     "treemap-ast": "1.0.0",

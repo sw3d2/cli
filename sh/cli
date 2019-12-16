@@ -29,7 +29,11 @@ rm -rf $TEMP_DIR/*;
 mkdir -p $JSON_DIR;
 
 echo "Cloning sources into $REPO_DIR";
-(GIT_TERMINAL_PROMPT=0 git clone --depth 1 --single-branch $REPO_URL $REPO_DIR) || exit 1;
+(GIT_TERMINAL_PROMPT=0 git clone \
+  --depth 1 \
+  --shallow-submodules \
+  --no-tags \
+  $REPO_URL $REPO_DIR) || exit 1;
 
 PATH=node_modules/.bin:$PATH;
 

@@ -1,0 +1,11 @@
+Usage: sh/cli src-url out-dir [src-dir]
+
+  src-url   This URL will be git clone'd or downloaded
+  out-dir   Output will be written here
+  src-dir   Subpath in the git repo
+
+Examples:
+
+  $ sh/cli https://github.com/microsoft/typescript /tmp/iswaac
+  $ sh/cli https://github.com/microsoft/typescript /tmp/iswaac tests
+  $ sh/cli hn:21840140 /tmp/iswaac

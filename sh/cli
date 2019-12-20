@@ -10,16 +10,8 @@ VAST=$JSON_DIR/vast.json;
 TMAP=$JSON_DIR/tmap.json;
 TM3D=$JSON_DIR/tm3d.json;
 
-if [ -z "$REPO_URL" ] || [ -z "$TEMP_DIR" ]
-then
-  echo "Usage: $0 git-url out-dir [src-dir]";
-  echo "";
-  echo "  git-url   This URL will be git clone'd";
-  echo "  out-dir   Output will be written here";
-  echo "  src-dir   Subpath in the git repo";
-  echo "";
-  echo "Example: $0 https://github.com/microsoft/typescript /tmp/iswaac";
-  echo "Example: $0 https://github.com/microsoft/typescript /tmp/iswaac tests";
+if [ -z "$REPO_URL" ] || [ -z "$TEMP_DIR" ]; then
+  cat usage.txt;
   exit 1;
 fi
 
@@ -28,17 +20,21 @@ mkdir -p $TEMP_DIR;
 rm -rf $TEMP_DIR/*;
 mkdir -p $JSON_DIR;
 
-echo "Cloning sources into $REPO_DIR";
-(GIT_TERMINAL_PROMPT=0 git clone \
-  --depth 1 \
-  --shallow-submodules \
-  --no-tags \
-  $REPO_URL $REPO_DIR) || exit 1;
-
 PATH=node_modules/.bin:$PATH;
 
-echo "Parsing TS and generating AST in $VAST";
-ast-typescript -p $REPO_DIR/$REPO_PATH > $VAST || exit 1;
+if [[ "$REPO_URL" =~ [^hn:] ]]; then
+  echo "Downloading HN comments from $REPO_URL and generating AST in $VAST";
+  hn-ast $REPO_URL $TEMP_DIR $VAST || exit 1;
+else
+  echo "Cloning sources into $REPO_DIR";
+  (GIT_TERMINAL_PROMPT=0 git clone \
+    --depth 1 \
+    --shallow-submodules \
+    --no-tags \
+    $REPO_URL $REPO_DIR) || exit 1;
+  echo "Parsing TS and generating AST in $VAST";
+  ast-typescript -p $REPO_DIR/$REPO_PATH > $VAST || exit 1;
+fi
 
 echo "Converting AST into a treemap in $TMAP";
 treemap-ast $VAST > $TMAP || exit 1;

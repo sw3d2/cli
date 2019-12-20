@@ -22,7 +22,7 @@ mkdir -p $JSON_DIR;
 
 PATH=node_modules/.bin:$PATH;
 
-if [[ "$REPO_URL" =~ [^hn:] ]]; then
+if [[ $REPO_URL =~ ^hn: ]]; then
   echo "Downloading HN comments from $REPO_URL and generating AST in $VAST";
   hn-ast $REPO_URL $TEMP_DIR $VAST || exit 1;
 else

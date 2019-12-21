@@ -51,5 +51,6 @@ if [ -z "$OUT_FILE" ]; then
   cat $TM3D;
 else
   echo "Copying the 3D treemap to $OUT_FILE";
+  mkdir -p $(dirname $OUT_FILE);
   cp $TM3D $OUT_FILE;
 fi

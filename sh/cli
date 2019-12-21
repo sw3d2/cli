@@ -1,39 +1,44 @@
 #!/bin/bash
-REPO_URL=$1;
-TEMP_DIR=$2;
-REPO_PATH=$3;
+DATA_SRC=$1;
+WORK_DIR=$2;
+OUT_FILE=$3;
 
-REPO_DIR=$TEMP_DIR/proj;
-JSON_DIR=$TEMP_DIR/json;
+GITHUB_BASE="https://github.com/";
+
+REPO_DIR=$WORK_DIR/proj;
+JSON_DIR=$WORK_DIR/json;
 
 VAST=$JSON_DIR/vast.json;
 TMAP=$JSON_DIR/tmap.json;
 TM3D=$JSON_DIR/tm3d.json;
 
-if [ -z "$REPO_URL" ] || [ -z "$TEMP_DIR" ]; then
+if [ -z "$DATA_SRC" ] || [ -z "$WORK_DIR" ]; then
   cat usage.txt;
   exit 1;
 fi
 
-echo "Cleaning $TEMP_DIR";
-mkdir -p $TEMP_DIR;
-rm -rf $TEMP_DIR/*;
+echo "Cleaning $WORK_DIR";
+mkdir -p $WORK_DIR;
+rm -rf $WORK_DIR/*;
 mkdir -p $JSON_DIR;
 
 PATH=node_modules/.bin:$PATH;
 
-if [[ $REPO_URL =~ ^hn: ]]; then
-  echo "Downloading HN comments from $REPO_URL and generating AST in $VAST";
-  hn-ast $REPO_URL $TEMP_DIR $VAST || exit 1;
-else
-  echo "Cloning sources into $REPO_DIR";
+if [[ $DATA_SRC =~ ^hn: ]]; then
+  echo "Downloading HN comments from $DATA_SRC";
+  hn-ast $DATA_SRC $WORK_DIR $VAST || exit 1;
+fi
+
+if [[ $DATA_SRC =~ ^github: ]]; then
+  GIT_URL="${DATA_SRC/github:/$GITHUB_BASE}";
+  echo "Cloning sources from $GIT_URL";
   (GIT_TERMINAL_PROMPT=0 git clone \
     --depth 1 \
     --shallow-submodules \
     --no-tags \
-    $REPO_URL $REPO_DIR) || exit 1;
+    $GIT_URL $REPO_DIR) || exit 1;
   echo "Parsing TS and generating AST in $VAST";
-  ast-typescript -p $REPO_DIR/$REPO_PATH > $VAST || exit 1;
+  ast-typescript -p $REPO_DIR > $VAST || exit 1;
 fi
 
 echo "Converting AST into a treemap in $TMAP";
@@ -41,3 +46,10 @@ treemap-ast $VAST > $TMAP || exit 1;
 
 echo "Generating a 3D treemap layout in $TM3D";
 webgl-3d-treemap $TMAP > $TM3D || exit 1;
+
+if [ -z "$OUT_FILE" ]; then
+  cat $TM3D;
+else
+  echo "Copying the 3D treemap to $OUT_FILE";
+  cp $TM3D $OUT_FILE;
+fi

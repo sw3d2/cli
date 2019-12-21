@@ -1,9 +1,9 @@
 {
   "name": "iswaac",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "bin": "sh/cli",
   "dependencies": {
-    "treemap-ast": "1.0.0",
+    "treemap-ast": "1.0.1",
     "webgl-3d-treemap": "1.1.1",
     "hn-ast": "1.0.3",
     "ast-typescript": "2.2.0"
